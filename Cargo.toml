@@ -8,9 +8,10 @@ keywords = ["egui", "eframe", "widget", "ui", "gamedev"]
 categories = ["gui", "graphics", "rendering"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/white-rabbit-scientific/egui-widget-texicon-demo-app"
-documentation = "https://docs.rs/egui-widget-texicon-demo-app"
 readme = "README.md"
 homepage = "https://github.com/white-rabbit-scientific/egui-widget-texicon-demo-app"
+
+publish = false
 
 [package.metadata.docs.rs]
 all-features = true
@@ -23,18 +24,14 @@ eframe = { version = "0.33", default-features = false, features = [
     "default_fonts", # Embed the default egui fonts.
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
     "persistence",   # Enable restoring app state when restarting the app.
+    "wayland",       # To support Linux (and CI)
+    "x11",           # To support older Linux distributions (restores one of the default features)
 ] }
 egui_extras = { version = "0.33", features = ["default", "all_loaders"] }
 log = "0.4"
+smallvec = "1.15"
 
-# Linux
-#egui-themes-resonanz = { path = "/home/rob/Github/egui-themes-resonanz/" }
-#egui-texicons-resonanz = { path = "/home/rob/Github/egui-texicons-resonanz/" }
-
-# Mac
-# egui-themes = { path = "/Users/robward/Github/egui-themes/" }
-egui-widget-texicon = { path = "/Users/robward/Github/egui-widget-texicon/" }
-smallvec = "1.15.1"
+egui_widget_texicon = "0.2"     # version doesn't matter because patch overrides it
 
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
@@ -43,25 +40,19 @@ env_logger = "0.11"
 # web:
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen-futures = "0.4"
-web-sys = "0.3.70"           # to access the DOM (to hide the loading text)
+web-sys = "0.3"
 
 [profile.release]
 opt-level = 2 # fast and small wasm
+lto = true
+codegen-units = 1
 
 # Optimize all dependencies even in debug builds:
 [profile.dev.package."*"]
 opt-level = 2
 
-
 [patch.crates-io]
-
-# If you want to use the bleeding edge version of egui and eframe:
-# egui = { git = "https://github.com/emilk/egui", branch = "master" }
-# eframe = { git = "https://github.com/emilk/egui", branch = "master" }
-
-# If you fork https://github.com/emilk/egui you can test with:
-# egui = { path = "../egui/crates/egui" }
-# eframe = { path = "../egui/crates/eframe" }
+egui_widget_texicon = { path = "../egui-widget-texicon" }
 
 # ----------------------------------------------------------------------------------------
 # Lints:

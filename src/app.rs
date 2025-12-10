@@ -45,7 +45,7 @@ impl eframe::App for TexiconDemoApp {
             });
 
         egui::SidePanel::left("left_panel")
-            .default_width(300.)
+            .exact_width(150.)
             .resizable(false)
             .show(ctx, |ui| {
                 crate::texi_sidebar::draw_texicons(ui, &mut self.texistate_vec_side);
