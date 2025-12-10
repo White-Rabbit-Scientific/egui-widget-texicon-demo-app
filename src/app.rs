@@ -2,6 +2,8 @@ use egui::{Color32, FontId};
 use egui_widget_texicon::TexiState;
 use smallvec::SmallVec;
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 pub struct TexiconDemoApp {
     run_once: bool,
     texistate_vec_side: SmallVec<[TexiState; crate::texi_sidebar::NUM_TEXICONS]>,
@@ -32,6 +34,8 @@ impl eframe::App for TexiconDemoApp {
         if self.run_once == false {
             self.run_once = true;
 
+            ctx.set_visuals(egui::Visuals::dark());
+
             crate::texi_sidebar::init_texicons(&mut self.texistate_vec_side);
             crate::texi_topbar::init_texicons(&mut self.texistate_vec_top);
             crate::texi_centralbar::init_texicons(&mut self.texistate_vec_central);
@@ -52,62 +56,35 @@ impl eframe::App for TexiconDemoApp {
             });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.add(egui::Label::new(
-                egui::RichText::new("Welcome to the Texicon Widget demo written in Rust and egui.")
-                    .color(Color32::WHITE)
-                    .font(FontId::new(24., egui::FontFamily::Proportional)),
-            ));
-            ui.add_space(10.);
-            ui.add(egui::Label::new(
-                egui::RichText::new(
-                    "-- Texicons are highly configurable, e.g. images (svg, png), text, colors, fonts, sizes, spacings etc.",
-                )
-                .color(Color32::WHITE.gamma_multiply_u8(200))
-                .font(FontId::new(18., egui::FontFamily::Proportional)),
-            ));
-            ui.add_space(4.);
-            ui.add(egui::Label::new(
-                egui::RichText::new(
-                    "-- Mouse hover and click support dynamic behavior",
-                )
-                .color(Color32::WHITE.gamma_multiply_u8(200))
-                .font(FontId::new(18., egui::FontFamily::Proportional)),
-            ));
-            ui.add_space(4.);
-            ui.add(egui::Label::new(
-                egui::RichText::new(
-                    "-- Tooltips are supported with configurable positioning and gap",
-                )
-                .color(Color32::WHITE.gamma_multiply_u8(200))
-                .font(FontId::new(18., egui::FontFamily::Proportional)),
-            ));
-            ui.add_space(4.);
-            ui.add(egui::Label::new(
-                egui::RichText::new(
-                    "-- Texicons provide selected / non-selected state outside the widget",
-                )
-                .color(Color32::WHITE.gamma_multiply_u8(200))
-                .font(FontId::new(18., egui::FontFamily::Proportional)),
-            ));
-            ui.add_space(4.);
-            ui.add(egui::Label::new(
-                egui::RichText::new(
-                    "-- Text will wrap, or split into two lines while maintaining centering",
-                )
-                .color(Color32::WHITE.gamma_multiply_u8(200))
-                .font(FontId::new(18., egui::FontFamily::Proportional)),
-            ));
-
-            ui.add_space(4.);
-            ui.add(egui::Label::new(
-                egui::RichText::new(
-                    "-- Click / hover can be over the entire widget area or the image + text area",
-                )
-                .color(Color32::WHITE.gamma_multiply_u8(200))
-                .font(FontId::new(18., egui::FontFamily::Proportional)),
-            ));
+            let welcome = format!("Welcome to the Texicon Widget Demo (version {}) written in Rust and egui.", VERSION);
+            print_heading(ui, &welcome);
+            print_bullets(ui, "-- Texicons are highly configurable, e.g. images (svg, png), text, colors, fonts, sizes, spacings etc.");
+            print_bullets(ui, "-- Mouse hover and click support dynamic behavior");
+            print_bullets(ui, "-- Mouse hover and click support dynamic behavior");
+            print_bullets(ui, "-- Tooltips are supported with configurable positioning and gap");
+            print_bullets(ui, "-- Texicons provide selected / non-selected state outside the widget");
+            print_bullets(ui, "-- Text will wrap, or split into two lines while maintaining centering");
+            print_bullets(ui, "-- Click / hover can be over the entire widget area or the image + text area");
 
             crate::texi_centralbar::draw_texicons(ui, &mut self.texistate_vec_central);
         });
     }
+}
+
+fn print_heading(ui: &mut egui::Ui, s: &str) {
+    ui.add(egui::Label::new(
+        egui::RichText::new(s)
+            .color(Color32::WHITE)
+            .font(FontId::new(24., egui::FontFamily::Proportional)),
+    ));
+    ui.add_space(10.);
+}
+
+fn print_bullets(ui: &mut egui::Ui, s: &str) {
+    ui.add(egui::Label::new(
+        egui::RichText::new(s)
+            .color(Color32::WHITE.gamma_multiply_u8(200))
+            .font(FontId::new(18., egui::FontFamily::Proportional)),
+    ));
+    ui.add_space(4.);
 }
