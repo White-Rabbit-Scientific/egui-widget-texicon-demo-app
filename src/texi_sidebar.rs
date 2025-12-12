@@ -1,4 +1,5 @@
-use egui::{include_image, ImageSource};
+use egui::{include_image, vec2, Color32, ImageSource};
+use egui_themes::ThemeName;
 use egui_widget_texicon::{TexiState, Texicon};
 use smallvec::SmallVec;
 
@@ -23,10 +24,10 @@ static TEXI_TEXT: &[&str] = &[TXT_TEXTTUBE, TXT_CLOCK, TXT_WAVES, TXT_GEAR];
 
 // Texicon tooltips
 static TOOLTIPS: &[&str] = &[TT_TEXTTUBE, TT_CLOCK, TT_WAVES, TT_GEAR];
-#[rustfmt::skip] const TT_TEXTTUBE: &'static str = "This is a tooltip for the test tube icon";
-#[rustfmt::skip] const TT_CLOCK:    &'static str = "This is a tooltip for the clock icon";
-#[rustfmt::skip] const TT_WAVES:    &'static str = "This is a tooltip for the waves icon";
-#[rustfmt::skip] const TT_GEAR:     &'static str = "This is a tooltip for the gear icon";
+#[rustfmt::skip] const TT_TEXTTUBE: &'static str = "Text wrapping and centering for long words.";
+#[rustfmt::skip] const TT_CLOCK:    &'static str = "Text wrapping and centering for short words";
+#[rustfmt::skip] const TT_WAVES:    &'static str = "Faint outline for non-selected Texicons.";
+#[rustfmt::skip] const TT_GEAR:     &'static str = "This is a tooltip for the gear Texicon.";
 
 pub fn init_texicons(texistates: &mut SmallVec<[TexiState; NUM_TEXICONS]>) {
     // Create shared state for each Texicon
@@ -38,28 +39,36 @@ pub fn init_texicons(texistates: &mut SmallVec<[TexiState; NUM_TEXICONS]>) {
 }
 
 pub fn draw_texicons(ui: &mut egui::Ui, texistates: &mut SmallVec<[TexiState; NUM_TEXICONS]>) {
+    // Get current theme color palette
+    let palette = ThemeName::current(ui.ctx()).palette();
+
     ui.vertical_centered(|ui| {
+        ui.add_space(20.);
         // Loop
         for (texi_vec_index, _img) in TEXI_IMGS.iter().enumerate() {
             if let Some(texi) = texistates.get_mut(texi_vec_index) {
                 let resp = ui.add(
                     Texicon::new(texi)
+                        .texi_frame_size(vec2(70., 80.))
+                        .texi_img_scale_hov(1.05)
                         .texi_img(TEXI_IMGS[texi_vec_index].clone())
-                        .texi_text(TEXI_TEXT[texi_vec_index].to_string())
+                        .texi_text(Some(TEXI_TEXT[texi_vec_index].to_string()))
                         .texi_img(TEXI_IMGS[texi_vec_index].clone())
+                        .texi_bkgnd_col(palette.base)
+                        .texi_bkgnd_col_sel(palette.crust)
+                        .texi_bkgnd_col_hov(palette.crust)
+                        .texi_img_tint(palette.text.gamma_multiply(0.5))
+                        .texi_img_tint_sel(palette.text)
+                        .texi_img_tint_hov(palette.text)
+                        .texi_text_col(palette.text.gamma_multiply(0.5))
+                        .texi_text_col_sel(palette.text)
+                        .texi_text_col_hov(palette.text)
+                        .texi_frame_col(palette.mantle)
+                        .texi_frame_col_sel(palette.overlay0)
+                        .texi_frame_col_hov(palette.overlay2)
+                        .texi_frame_width(2.)
                         .texi_tooltip_text(Option::Some(TOOLTIPS[texi_vec_index].to_string()))
-                        .texi_tooltip_gap(20.), // .texi_enabled((index % 2) != 0)
-                                                // .texi_img(img.clone())
-                                                // .texi_top_gap(10.)
-                                                // .texi_frame_size(vec2(60., 70.))
-                                                // .texi_img_size(vec2(32., 32.))
-                                                // .texi_text_size(13.)
-                                                // .texi_rounding(CornerRadius::same(6))
-                                                // .texi_sense(TexiSense::Frame)
-                                                // .texi_frame_col(Color32::TRANSPARENT)
-                                                // .texi_frame_col_sel(Color32::TRANSPARENT)
-                                                // .texi_frame_col_hov(Color32::TRANSPARENT)
-                                                // .texi_img_text_gap(2.),
+                        .texi_tooltip_gap(20.),
                 );
                 if resp.clicked() {
                     texistates.iter_mut().for_each(|t| t.texi_selected = false);

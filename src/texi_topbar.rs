@@ -1,4 +1,5 @@
-use egui::{include_image, Color32, ImageSource};
+use egui::{include_image, vec2, ImageSource};
+use egui_themes::ThemeName;
 use egui_widget_texicon::{TexiState, Texicon};
 use smallvec::SmallVec;
 
@@ -12,7 +13,7 @@ static TEXI_IMGS: &[ImageSource<'static>] = &[IMG_TESTTUBE, IMG_CLOCK, IMG_WAVES
 #[rustfmt::skip] const IMG_TESTTUBE: ImageSource<'static> = include_image!("../assets/pics/testtube.svg");
 #[rustfmt::skip] const IMG_CLOCK:    ImageSource<'static> = include_image!("../assets/pics/clock.svg");
 #[rustfmt::skip] const IMG_WAVES:    ImageSource<'static> = include_image!("../assets/pics/waves.svg");
-#[rustfmt::skip] const IMG_GEAR:     ImageSource<'static> = include_image!("../assets/pics/gear.svg");
+#[rustfmt::skip] const IMG_GEAR:     ImageSource<'static> = include_image!("../assets/pics/gear-light.svg");
 
 // Texicon text
 static TEXI_TEXT: &[&str] = &[TXT_TEXTTUBE, TXT_CLOCK, TXT_WAVES, TXT_GEAR];
@@ -23,10 +24,10 @@ static TEXI_TEXT: &[&str] = &[TXT_TEXTTUBE, TXT_CLOCK, TXT_WAVES, TXT_GEAR];
 
 // Texicon tooltips
 static TOOLTIPS: &[&str] = &[TT_TEXTTUBE, TT_CLOCK, TT_WAVES, TT_GEAR];
-#[rustfmt::skip] const TT_TEXTTUBE: &'static str = "This is a tooltip for the test tube icon";
-#[rustfmt::skip] const TT_CLOCK:    &'static str = "This is a tooltip for the clock icon";
-#[rustfmt::skip] const TT_WAVES:    &'static str = "This is a tooltip for the waves icon";
-#[rustfmt::skip] const TT_GEAR:     &'static str = "This is a tooltip for the gear icon";
+#[rustfmt::skip] const TT_TEXTTUBE: &'static str = "This is a tooltip for the test tube icon.";
+#[rustfmt::skip] const TT_CLOCK:    &'static str = "This is a tooltip for the clock icon.";
+#[rustfmt::skip] const TT_WAVES:    &'static str = "This is a tooltip for the waves icon.";
+#[rustfmt::skip] const TT_GEAR:     &'static str = "This is a tooltip for the gear icon.";
 
 pub fn init_texicons(texistates: &mut SmallVec<[TexiState; NUM_TEXICONS]>) {
     // Create shared state for each Texicon
@@ -38,6 +39,9 @@ pub fn init_texicons(texistates: &mut SmallVec<[TexiState; NUM_TEXICONS]>) {
 }
 
 pub fn draw_texicons(ui: &mut egui::Ui, texistates: &mut SmallVec<[TexiState; NUM_TEXICONS]>) {
+    // Get current theme color palette
+    let palette = ThemeName::current(ui.ctx()).palette();
+
     let (_id, rect) = ui.allocate_space(egui::vec2(ui.available_width(), ui.available_height()));
 
     let center_x = rect.center().x;
@@ -59,23 +63,33 @@ pub fn draw_texicons(ui: &mut egui::Ui, texistates: &mut SmallVec<[TexiState; NU
                 texi_rect,
                 Texicon::new(texi)
                     .texi_img(TEXI_IMGS[texi_vec_index].clone())
-                    .texi_text(TEXI_TEXT[texi_vec_index].to_string())
+                    .texi_text(Some(TEXI_TEXT[texi_vec_index].to_string()))
                     .texi_text_size(11. + 2. * texi_vec_index as f32)
+                    .texi_img_size(vec2(70., 70.))
+                    .texi_img_scale_hov(1.05)
                     .texi_img_text_gap(5. + 2. * texi_vec_index as f32)
                     .texi_frame_size(texi_size)
                     .texi_top_gap(0.)
                     .texi_bottom_gap(0.)
-                    .texi_frame_width(0.)
-                    .texi_img_size(egui::vec2(70., 70.))
-                    .texi_bkgnd_col(Color32::TRANSPARENT)
-                    .texi_bkgnd_col_sel(Color32::TRANSPARENT)
-                    .texi_text_col_sel(Color32::WHITE)
+                    .texi_bkgnd_col(palette.base)
+                    .texi_bkgnd_col_sel(palette.mantle)
+                    .texi_bkgnd_col_hov(palette.crust)
+                    .texi_img_tint(palette.green.gamma_multiply(0.5))
+                    .texi_img_tint_sel(palette.green)
+                    .texi_img_tint_hov(palette.green)
+                    .texi_text_col(palette.green.gamma_multiply(0.5))
+                    .texi_text_col_sel(palette.green)
+                    .texi_text_col_hov(palette.green)
+                    .texi_frame_col(palette.base)
+                    .texi_frame_col_sel(palette.base)
+                    .texi_frame_col_hov(palette.surface2)
+                    .texi_frame_width(2.)
+                    .texi_radius(4)
                     .texi_img(img.clone())
                     .texi_tooltip_text(Some(TOOLTIPS[texi_vec_index].to_string()))
                     .texi_tooltip_gap(20.)
                     .texi_tooltip_position(egui::RectAlign::BOTTOM),
             );
-
             if resp.clicked() {
                 texistates.iter_mut().for_each(|t| t.texi_selected = false);
                 texistates[texi_vec_index].texi_selected = true;
