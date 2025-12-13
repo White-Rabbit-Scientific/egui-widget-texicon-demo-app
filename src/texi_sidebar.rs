@@ -1,4 +1,4 @@
-use egui::{include_image, vec2, Color32, ImageSource};
+use egui::{include_image, vec2, ImageSource};
 use egui_themes::ThemeName;
 use egui_widget_texicon::{TexiState, Texicon};
 use smallvec::SmallVec;

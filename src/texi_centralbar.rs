@@ -1,4 +1,4 @@
-use egui::{include_image, Color32, ImageSource};
+use egui::{include_image, ImageSource};
 use egui_themes::ThemeName;
 use egui_widget_texicon::{TexiState, Texicon};
 use smallvec::SmallVec;
@@ -158,7 +158,7 @@ pub fn draw_texicons(ui: &mut egui::Ui, texistates: &mut SmallVec<[TexiState; NU
                 .texi_frame_width(2.)
                 .texi_img_text_gap(10.)
                 .texi_img_size(egui::vec2(40., 40.))
-                .texi_img_scale_hov(1.05)
+                .texi_img_scale_hov(1.15)
                 .texi_bkgnd_col(palette.base)
                 .texi_bkgnd_col_sel(palette.mantle)
                 .texi_bkgnd_col_hov(palette.crust)
@@ -169,8 +169,8 @@ pub fn draw_texicons(ui: &mut egui::Ui, texistates: &mut SmallVec<[TexiState; NU
                 .texi_text_col_sel(palette.teal)
                 .texi_text_col_hov(palette.teal)
                 .texi_frame_col(palette.crust)
-                .texi_frame_col_sel(palette.crust)
-                .texi_frame_col_hov(palette.surface2)
+                .texi_frame_col_sel(palette.subtext0)
+                .texi_frame_col_hov(palette.subtext0)
                 .texi_tooltip_text(Some(TOOLTIPS[texi_vec_index].to_string()))
                 .texi_tooltip_gap(20.)
                 .texi_radius(20)
@@ -213,8 +213,8 @@ pub fn draw_texicons(ui: &mut egui::Ui, texistates: &mut SmallVec<[TexiState; NU
                 .texi_text_col_sel(palette.green)
                 .texi_text_col_hov(palette.green)
                 .texi_frame_col(palette.crust)
-                .texi_frame_col_sel(palette.crust)
-                .texi_frame_col_hov(palette.crust)
+                .texi_frame_col_sel(palette.subtext0)
+                .texi_frame_col_hov(palette.subtext0)
                 .texi_frame_width(4.)
                 .texi_tooltip_text(Some(TOOLTIPS[texi_vec_index].to_string()))
                 .texi_tooltip_gap(20.)

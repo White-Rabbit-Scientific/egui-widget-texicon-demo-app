@@ -1,5 +1,5 @@
 use egui::FontId;
-use egui_themes::{ThemeName, ThemeWidget};
+use egui_themes::ThemeWidget;
 use egui_widget_texicon::TexiState;
 use smallvec::SmallVec;
 
@@ -37,8 +37,6 @@ impl eframe::App for TexiconDemoApp {
         if self.run_once == false {
             self.run_once = true;
 
-            ThemeName::Latte.set(ctx);
-
             crate::texi_sidebar::init_texicons(&mut self.texistate_vec_side);
             crate::texi_topbar::init_texicons(&mut self.texistate_vec_top);
             crate::texi_centralbar::init_texicons(&mut self.texistate_vec_central);
@@ -61,8 +59,7 @@ impl eframe::App for TexiconDemoApp {
         egui::CentralPanel::default().show(ctx, |ui| {
 
             ui.add(
-                ThemeWidget::new(ThemeName::Latte)
-                    .compact(false)
+                ThemeWidget::new()
                     .label("Theme:")
                     .show_labels(false),
             );
