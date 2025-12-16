@@ -24,9 +24,7 @@ fn main() -> eframe::Result {
         Box::new(|cc| {
             // This gives us image support:
             egui_extras::install_image_loaders(&cc.egui_ctx);
-            Ok(Box::new(egui_widget_texicon_demo_app::TexiconDemoApp::new(
-                cc,
-            )))
+            Ok(Box::new(egui_widget_texicon_demo_app::TexiconDemoApp::new()))
         }),
     )
 }

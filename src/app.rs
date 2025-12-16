@@ -1,85 +1,91 @@
 use egui::FontId;
 use egui_themes::ThemeWidget;
-use egui_widget_texicon::TexiState;
-use smallvec::SmallVec;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[rustfmt::skip]
 pub struct TexiconDemoApp {
-    run_once:              bool,
-    texistate_vec_side:    SmallVec<[TexiState; crate::texi_sidebar::NUM_TEXICONS]>,
-    texistate_vec_top:     SmallVec<[TexiState; crate::texi_topbar::NUM_TEXICONS]>,
-    texistate_vec_central: SmallVec<[TexiState; crate::texi_centralbar::NUM_TEXICONS]>,
-}
-
-#[rustfmt::skip]
-impl Default for TexiconDemoApp {
-    fn default() -> Self {
-        Self {
-            run_once:              false,
-            texistate_vec_side:    SmallVec::new(),
-            texistate_vec_top:     SmallVec::new(),
-            texistate_vec_central: SmallVec::new(),
-        }
-    }
+    top_menu: crate::texi_top_menu::TexiState,
+    side_menu: crate::texi_side_menu::TexiState,
+    central_menu: crate::texi_central_menu::TexiState,
 }
 
 impl TexiconDemoApp {
-    /// Called once before the first frame.
-    pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
-        Default::default()
+    pub fn new() -> Self {
+        let mut app = Self {
+            top_menu: crate::texi_top_menu::TexiState::new(),
+            side_menu: crate::texi_side_menu::TexiState::new(),
+            central_menu: crate::texi_central_menu::TexiState::new(),
+        };
+        app.top_menu.set_selected_texicon(0);
+        app.side_menu.set_selected_texicon(0);
+        app.central_menu.set_selected_texicon(0);
+        app
     }
 }
 
 impl eframe::App for TexiconDemoApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        if self.run_once == false {
-            self.run_once = true;
-
-            crate::texi_sidebar::init_texicons(&mut self.texistate_vec_side);
-            crate::texi_topbar::init_texicons(&mut self.texistate_vec_top);
-            crate::texi_centralbar::init_texicons(&mut self.texistate_vec_central);
-        }
-
         egui::TopBottomPanel::top("top_panel")
             .exact_height(150.)
             .resizable(false)
             .show(ctx, |ui| {
-                crate::texi_topbar::draw_texicons(ui, &mut self.texistate_vec_top);
+                self.top_menu.draw_texicons(ui);
             });
 
         egui::SidePanel::left("left_panel")
-            .exact_width(200.)
+            .exact_width(150.)
             .resizable(false)
             .show(ctx, |ui| {
-                crate::texi_sidebar::draw_texicons(ui, &mut self.texistate_vec_side);
+                self.side_menu.draw_texicons(ui);
             });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-
-            ui.add(
-                ThemeWidget::new()
-                    .label("Theme:")
-                    .show_labels(false),
-            );
-
+            // Theme selector
+            ui.add(ThemeWidget::new().label("Theme:").show_labels(false));
             ui.add_space(10.);
-
-            let welcome = format!("Texicon Widget Demo (version {}) written in Rust and egui.", VERSION);
-            print_heading(ui, &welcome);
-            print_bullets(ui, "-- Texicons = Text + icon");
-            print_bullets(ui, "-- Texicons are highly configurable: images (svg, png), text, colors, fonts, sizes, spacings, scaling etc.");
-            print_bullets(ui, "-- Mouse hover and click support dynamic behavior");
-            print_bullets(ui, "-- Tooltips are supported with configurable positioning and gap");
-            print_bullets(ui, "-- Texicons provide selected / non-selected state outside the widget");
-            print_bullets(ui, "-- Text will wrap, or split into two lines while maintaining centering");
-            print_bullets(ui, "-- Click / hover can be over the entire widget area or the image + text area");
-            print_bullets_warn(ui, "-- Try hovering and clicking on the Texicons to see their behavior");
-
-            crate::texi_centralbar::draw_texicons(ui, &mut self.texistate_vec_central);
+            print_text(ui);
+            self.central_menu.draw_texicons(ui);
         });
     }
+}
+
+#[rustfmt::skip]
+static BULLETS: &[&str] = &[
+    "-- Texicon = Text + icon",
+    "-- Texicons are highly configurable: images (svg, png), text, colors, fonts, sizes, spacings, scaling etc.",
+    "-- Mouse hover and click support dynamic behavior",
+    "-- Tooltips are supported with configurable positioning and gap",
+    "-- Texicons provide selected / non-selected state outside the widget",
+    "-- Text will wrap, or split into two lines while maintaining centering",
+    "-- Click / hover can be over the entire widget area or the image + text area",
+    "-- Try hovering and clicking on the Texicons to see their behavior",
+];
+
+#[rustfmt::skip]
+static RED_BULLETS: &[&str] = &[
+    "-- Try hovering and clicking on the Texicons to see their behavior",
+];
+
+enum TextStyle {
+    Normal,
+    Warning,
+}
+
+fn print_text(ui: &mut egui::Ui) {
+    print_heading(
+        ui,
+        &format!(
+            "Texicon Widget Demo (version {}) written in Rust and egui.",
+            VERSION
+        ),
+    );
+
+    for bullet in BULLETS {
+        print_bullets(ui, bullet, TextStyle::Normal);
+    }
+
+    print_bullets(ui, RED_BULLETS[0], TextStyle::Warning);
 }
 
 fn print_heading(ui: &mut egui::Ui, s: &str) {
@@ -91,19 +97,14 @@ fn print_heading(ui: &mut egui::Ui, s: &str) {
     ui.add_space(10.);
 }
 
-fn print_bullets(ui: &mut egui::Ui, s: &str) {
+fn print_bullets(ui: &mut egui::Ui, s: &str, text_style: TextStyle) {
+    let color = match text_style {
+        TextStyle::Normal => ui.visuals().strong_text_color(),
+        TextStyle::Warning => ui.visuals().warn_fg_color,
+    };
     ui.add(egui::Label::new(
         egui::RichText::new(s)
-            .color(ui.visuals().strong_text_color())
-            .font(FontId::new(18., egui::FontFamily::Proportional)),
-    ));
-    ui.add_space(4.);
-}
-
-fn print_bullets_warn(ui: &mut egui::Ui, s: &str) {
-    ui.add(egui::Label::new(
-        egui::RichText::new(s)
-            .color(ui.visuals().warn_fg_color)
+            .color(color)
             .font(FontId::new(18., egui::FontFamily::Proportional)),
     ));
     ui.add_space(4.);
