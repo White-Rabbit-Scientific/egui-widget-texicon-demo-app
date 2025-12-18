@@ -16,7 +16,6 @@ struct MyTexicon {
     img:     ImageSource<'static>,
     text:    &'static str,
     tooltip: &'static str,
-    uid:     &'static str,
 }
 
 #[rustfmt::skip]
@@ -25,25 +24,21 @@ const TEXICONS: [MyTexicon; 4] = [
         img:     include_image!("../assets/pics/testtube.svg"),
         text:    "Experiments",
         tooltip: "Text wrapping and centering for long words.",
-        uid:     "ls_tt",
     },
     MyTexicon {
         img:     include_image!("../assets/pics/clock.svg"),
         text:    "Timing Stuff",
         tooltip: "Text wrapping and centering for multiple words.",
-        uid:     "ls_ck",
     },
     MyTexicon {
         img:     include_image!("../assets/pics/waves.svg"),
         text:    "Filtering",
         tooltip: "This is a tooltip for the waves Texicon.",
-        uid:     "ls_wv",
     },
     MyTexicon {
         img:     include_image!("../assets/pics/gear-light.svg"),
         text:    "Settings",
         tooltip: "This is a tooltip for the gear Texicon.",
-        uid:     "ls_gr",
     },
 ];
 
@@ -52,7 +47,6 @@ const NUM_TEXICONS: usize = TEXICONS.len();
 #[derive(Clone, Default)]
 pub struct TexiState {
     selected: [bool; NUM_TEXICONS],
-    hovering: [bool; NUM_TEXICONS],
 }
 
 impl TexiState {
@@ -90,19 +84,17 @@ impl TexiState {
 
             let resp = ui.put(
                 texi_rect,
-                Texicon::new(texicon.uid)
+                Texicon::new(texicon.img.clone())
                     .texi_enabled(true)
                     .texi_is_selected(self.selected[idx])
-                    .texi_is_hovered(self.hovering[idx])
-                    .texi_img(texicon.img.clone())
                     .texi_img_scale_hov(IMG_SCALE_HOVER)
                     .texi_text(Some(texicon.text.to_string()))
                     .texi_bkgnd_col(palette.base)
                     .texi_bkgnd_col_sel(palette.crust)
                     .texi_bkgnd_col_hov(palette.crust)
-                    .texi_img_tint(text_dim)
-                    .texi_img_tint_sel(palette.text)
-                    .texi_img_tint_hov(palette.mauve)
+                    .texi_img_tint_col(text_dim)
+                    .texi_img_tint_col_sel(palette.text)
+                    .texi_img_tint_col_hov(palette.mauve)
                     .texi_text_col(text_dim)
                     .texi_text_col_sel(palette.text)
                     .texi_text_col_hov(palette.mauve)
@@ -119,8 +111,6 @@ impl TexiState {
                 self.selected = [false; NUM_TEXICONS];
                 self.selected[idx] = true;
             }
-            // Hover response
-            self.hovering[idx] = resp.hovered();
 
             y += TEXI_HEIGHT + TEXI_GAP;
         }

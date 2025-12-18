@@ -13,7 +13,6 @@ struct MyTexicon {
     img:     ImageSource<'static>,
     text:    &'static str,
     tooltip: &'static str,
-    uid:     &'static str,
 }
 
 #[rustfmt::skip]
@@ -22,31 +21,26 @@ const TEXICONS: [MyTexicon; 5] = [
         img:     include_image!("../assets/pics/testtube.svg"),
         text:    "Experiments",
         tooltip: "No image and text provided. Mouseover senses text and icon, not frame.",
-        uid:     "top_tt",
     },
     MyTexicon {
         img:     include_image!("../assets/pics/clock.svg"),
         text:    "Timing Stuff",
         tooltip: "Image provided, text set to None.",
-        uid:     "top_ck",
     },
     MyTexicon {
         img:     include_image!("../assets/pics/waves.svg"),
         text:    "FILTERING",
         tooltip: "This is a tooltip for the waves icon.",
-        uid:     "top_wv",
     },
     MyTexicon {
         img:     include_image!("../assets/pics/gear.svg"),
         text:    "Settings",
         tooltip: "This is a tooltip for the gear icon.",
-        uid:     "top_gr",
     },
     MyTexicon {
         img:     include_image!("../assets/pics/article.png"),
         text:    "Documents (disabled)",
         tooltip: "This is a tooltip for the documents icon.",
-        uid:     "top_at",
     },
 ];
 
@@ -55,7 +49,6 @@ const NUM_TEXICONS: usize = TEXICONS.len();
 #[derive(Clone, Default)]
 pub struct TexiState {
     selected: [bool; NUM_TEXICONS],
-    hovering: [bool; NUM_TEXICONS],
 }
 
 impl TexiState {
@@ -93,23 +86,19 @@ impl TexiState {
 
         let resp = ui.put(
             texi_rect,
-            Texicon::new(texicon.uid)
+            Texicon::new(texicon.img.clone())
                 .texi_enabled(true)
                 .texi_is_selected(self.selected[idx])
-                .texi_is_hovered(self.hovering[idx])
-                // .texi_img(texicon.img.clone())
                 .texi_img_size(vec2(80., 80.))
                 .texi_img_scale_hov(1.1)
-                // .texi_text(Some(texicon.text.to_string()))
                 .texi_text_size(13.)
-                .texi_top_gap(0.)
                 .texi_sense(egui_widget_texicon::TexiSense::ImageAndText)
                 .texi_bkgnd_col(palette.red)
                 .texi_bkgnd_col_sel(palette.mauve)
                 .texi_bkgnd_col_hov(palette.mauve)
-                .texi_img_tint(palette.base)
-                .texi_img_tint_sel(palette.base)
-                .texi_img_tint_hov(palette.base)
+                .texi_img_tint_col(palette.base)
+                .texi_img_tint_col_sel(palette.base)
+                .texi_img_tint_col_hov(palette.base)
                 .texi_text_col(palette.base)
                 .texi_text_col_sel(palette.base)
                 .texi_text_col_hov(palette.base)
@@ -127,8 +116,6 @@ impl TexiState {
             self.selected = [false; NUM_TEXICONS];
             self.selected[idx] = true;
         }
-        // Hover response
-        self.hovering[idx] = resp.hovered();
 
         // === TEXICON #2 ===
         x += TEXI_WIDTH + TEXI_GAP;
@@ -139,23 +126,20 @@ impl TexiState {
 
         let resp = ui.put(
             texi_rect,
-            Texicon::new(texicon.uid)
+            Texicon::new(texicon.img.clone())
                 .texi_enabled(true)
                 .texi_is_selected(self.selected[idx])
-                .texi_is_hovered(self.hovering[idx])
-                .texi_img(texicon.img.clone())
+                // .texi_img(texicon.img.clone())
                 .texi_img_size(vec2(48., 48.))
                 .texi_img_scale_hov(1.3)
                 .texi_text(None)
-                .texi_top_gap(0.)
-                .texi_bottom_gap(0.)
                 .texi_sense(egui_widget_texicon::TexiSense::Frame)
                 .texi_bkgnd_col(palette.red.gamma_multiply_u8(8))
                 .texi_bkgnd_col_sel(palette.red.gamma_multiply_u8(24))
                 .texi_bkgnd_col_hov(palette.red.gamma_multiply_u8(64))
-                .texi_img_tint(palette.text)
-                .texi_img_tint_sel(palette.text)
-                .texi_img_tint_hov(palette.text)
+                .texi_img_tint_col(palette.text)
+                .texi_img_tint_col_sel(palette.text)
+                .texi_img_tint_col_hov(palette.text)
                 .texi_frame_col(palette.crust)
                 .texi_frame_col_sel(palette.text)
                 .texi_frame_col_hov(palette.text)
@@ -171,8 +155,6 @@ impl TexiState {
             self.selected = [false; NUM_TEXICONS];
             self.selected[idx] = true;
         }
-        // Hover response
-        self.hovering[idx] = resp.hovered();
 
         // === TEXICON #3 ===
         x += TEXI_WIDTH + TEXI_GAP;
@@ -183,24 +165,21 @@ impl TexiState {
 
         let resp = ui.put(
             texi_rect,
-            Texicon::new(texicon.uid)
+            Texicon::new(texicon.img.clone())
                 .texi_enabled(true)
                 .texi_is_selected(self.selected[idx])
-                .texi_is_hovered(self.hovering[idx])
-                .texi_img(texicon.img.clone())
+                // .texi_img(texicon.img.clone())
                 .texi_img_size(vec2(40., 40.))
                 .texi_img_scale_hov(1.15)
                 .texi_text(Some(texicon.text.to_string()))
                 .texi_text_size(15.)
                 .texi_img_text_gap(10.)
-                .texi_top_gap(0.)
-                .texi_bottom_gap(0.)
                 .texi_bkgnd_col(palette.base)
                 .texi_bkgnd_col_sel(palette.mantle)
                 .texi_bkgnd_col_hov(palette.crust)
-                .texi_img_tint(palette.blue)
-                .texi_img_tint_sel(palette.blue)
-                .texi_img_tint_hov(palette.blue)
+                .texi_img_tint_col(palette.blue)
+                .texi_img_tint_col_sel(palette.blue)
+                .texi_img_tint_col_hov(palette.blue)
                 .texi_text_col(palette.teal)
                 .texi_text_col_sel(palette.teal)
                 .texi_text_col_hov(palette.teal)
@@ -219,8 +198,6 @@ impl TexiState {
             self.selected = [false; NUM_TEXICONS];
             self.selected[idx] = true;
         }
-        // Hover response
-        self.hovering[idx] = resp.hovered();
 
         // === TEXICON #4 ===
         x += TEXI_WIDTH + TEXI_GAP;
@@ -231,24 +208,21 @@ impl TexiState {
 
         let resp = ui.put(
             texi_rect,
-            Texicon::new(texicon.uid)
+            Texicon::new(texicon.img.clone())
                 .texi_enabled(true)
                 .texi_is_selected(self.selected[idx])
-                .texi_is_hovered(self.hovering[idx])
-                .texi_img(texicon.img.clone())
+                // .texi_img(texicon.img.clone())
                 .texi_img_size(vec2(50., 50.))
                 .texi_img_scale_hov(1.1)
                 .texi_text(Some(texicon.text.to_string()))
                 .texi_text_size(17.)
-                .texi_img_text_gap(16.)
-                .texi_top_gap(0.)
-                .texi_bottom_gap(0.)
+                .texi_img_text_gap(6.)
                 .texi_bkgnd_col(palette.base)
                 .texi_bkgnd_col_sel(palette.mantle)
                 .texi_bkgnd_col_hov(palette.crust)
-                .texi_img_tint(palette.green)
-                .texi_img_tint_sel(palette.yellow)
-                .texi_img_tint_hov(palette.yellow)
+                .texi_img_tint_col(palette.green)
+                .texi_img_tint_col_sel(palette.yellow)
+                .texi_img_tint_col_hov(palette.yellow)
                 .texi_text_col(palette.yellow)
                 .texi_text_col_sel(palette.green)
                 .texi_text_col_hov(palette.green)
@@ -266,8 +240,6 @@ impl TexiState {
             self.selected = [false; NUM_TEXICONS];
             self.selected[idx] = true;
         }
-        // Hover response
-        self.hovering[idx] = resp.hovered();
 
         // === TEXICON #5 ===
         x += TEXI_WIDTH + TEXI_GAP;
@@ -278,23 +250,20 @@ impl TexiState {
 
         let resp = ui.put(
             texi_rect,
-            Texicon::new(texicon.uid)
+            Texicon::new(texicon.img.clone())
                 .texi_enabled(false)
                 .texi_is_selected(self.selected[idx])
-                .texi_is_hovered(self.hovering[idx])
-                .texi_img(texicon.img.clone())
+                // .texi_img(texicon.img.clone())
                 .texi_img_size(vec2(50., 50.))
                 .texi_text(Some(texicon.text.to_string()))
                 .texi_text_size(17.)
                 .texi_img_text_gap(0.)
-                .texi_top_gap(0.)
-                .texi_bottom_gap(0.)
                 .texi_bkgnd_col(palette.base)
                 .texi_bkgnd_col_sel(palette.mantle)
                 .texi_bkgnd_col_hov(palette.crust)
-                .texi_img_tint(palette.green)
-                .texi_img_tint_sel(palette.yellow)
-                .texi_img_tint_hov(palette.yellow)
+                .texi_img_tint_col(palette.green)
+                .texi_img_tint_col_sel(palette.yellow)
+                .texi_img_tint_col_hov(palette.yellow)
                 .texi_text_col(palette.yellow)
                 .texi_text_col_sel(palette.green)
                 .texi_text_col_hov(palette.green)
@@ -312,7 +281,5 @@ impl TexiState {
             self.selected = [false; NUM_TEXICONS];
             self.selected[idx] = true;
         }
-        // Hover response
-        self.hovering[idx] = resp.hovered();
     }
 }

@@ -22,7 +22,6 @@ struct MyTexicon {
     img:     ImageSource<'static>,
     text:    &'static str,
     tooltip: &'static str,
-    uid:     &'static str,
 }
 
 #[rustfmt::skip]
@@ -31,25 +30,21 @@ const TEXICONS: [MyTexicon; 4] = [
         img:     include_image!("../assets/pics/testtube.svg"),
         text:    "Undersized text",
         tooltip: "This is a tooltip for the test tube icon. Note the small font size.",
-        uid:     "top_tt",
     },
     MyTexicon {
         img:     include_image!("../assets/pics/clock.svg"),
         text:    "Normal text",
         tooltip: "This is a tooltip for the clock icon.",
-        uid:     "top_ck",
     },
     MyTexicon {
         img:     include_image!("../assets/pics/waves.svg"),
         text:    "Large text",
         tooltip: "This is a tooltip for the waves icon. Note the large font size.",
-        uid:     "top_wv",
     },
     MyTexicon {
         img:     include_image!("../assets/pics/gear-light.svg"),
         text:    "Extra large text",
         tooltip: "This is a tooltip for the gear icon. Note the extra large font size.",
-        uid:     "top_gr",
     },
 ];
 
@@ -58,7 +53,6 @@ const NUM_TEXICONS: usize = TEXICONS.len();
 #[derive(Clone, Default)]
 pub struct TexiState {
     selected: [bool; NUM_TEXICONS],
-    hovering: [bool; NUM_TEXICONS],
 }
 
 impl TexiState {
@@ -98,24 +92,21 @@ impl TexiState {
 
             let resp = ui.put(
                 texi_rect,
-                Texicon::new(texicon.uid)
+                Texicon::new(texicon.img.clone())
                     .texi_enabled(true)
                     .texi_is_selected(self.selected[idx])
-                    .texi_is_hovered(self.hovering[idx])
-                    .texi_img(texicon.img.clone())
+                    // .texi_img(texicon.img.clone())
                     .texi_img_size(IMG_SIZE)
                     .texi_img_scale_hov(IMG_SCALE_HOVER)
                     .texi_text(Some(texicon.text.to_string()))
                     .texi_text_size(BASE_TEXT_SIZE + TEXT_SIZE_INCREMENT * idx as f32)
                     .texi_img_text_gap(BASE_IMG_TEXT_GAP + IMG_TEXT_GAP_INCREMENT * idx as f32)
-                    .texi_top_gap(0.)
-                    .texi_bottom_gap(0.)
                     .texi_bkgnd_col(palette.base)
                     .texi_bkgnd_col_sel(palette.mantle)
                     .texi_bkgnd_col_hov(palette.crust)
-                    .texi_img_tint(green_dim)
-                    .texi_img_tint_sel(palette.green)
-                    .texi_img_tint_hov(palette.green)
+                    .texi_img_tint_col(green_dim)
+                    .texi_img_tint_col_sel(palette.green)
+                    .texi_img_tint_col_hov(palette.green)
                     .texi_text_col(green_dim)
                     .texi_text_col_sel(palette.green)
                     .texi_text_col_hov(palette.green)
@@ -134,8 +125,6 @@ impl TexiState {
                 self.selected = [false; NUM_TEXICONS];
                 self.selected[idx] = true;
             }
-            // Hover response
-            self.hovering[idx] = resp.hovered();
 
             x += TEXI_WIDTH + TEXI_GAP;
         }

@@ -2,7 +2,7 @@
 name = "egui-widget-texicon-demo-app"
 version = "0.2.0"
 edition = "2021"
-rust-version = "1.91"
+rust-version = "1.92"
 description = "An egui widget that combines an image and text (icon + label)"
 keywords = ["egui", "eframe", "widget", "ui", "gamedev"]
 categories = ["gui", "graphics", "rendering"]
