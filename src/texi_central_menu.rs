@@ -1,6 +1,6 @@
 use egui::{include_image, vec2, ImageSource};
-use egui_themes::ThemeName;
 use egui_widget_texicon::Texicon;
+use egui_widget_themenator::ThemeName;
 
 // === Constants ===
 #[rustfmt::skip] const TEXI_WIDTH: f32  = 100.0;
@@ -46,9 +46,17 @@ const TEXICONS: [MyTexicon; 5] = [
 
 const NUM_TEXICONS: usize = TEXICONS.len();
 
+#[derive(Default, Clone)]
+pub struct Benchmark {
+    pub count: f32,
+    pub sum: f32,
+    pub average: f32,
+}
+
 #[derive(Clone, Default)]
 pub struct TexiState {
     selected: [bool; NUM_TEXICONS],
+    benchmark: Benchmark,
 }
 
 impl TexiState {
@@ -78,6 +86,15 @@ impl TexiState {
         let mut x = center_x - total_width / 2.0;
         let y = center_y - TEXI_HEIGHT / 2.0; // perfect vertical centering
 
+        // ------------------------
+        // Timing the Texicons loop
+        // ------------------------
+        #[cfg(not(target_arch = "wasm32"))]
+        let start_time = std::time::Instant::now();
+
+        // -----------------
+        // Draw the Texicons
+        // -----------------
         // === TEXICON #1 ===
         let mut idx = 0;
         let texicon = &TEXICONS[idx];
@@ -87,29 +104,29 @@ impl TexiState {
         let resp = ui.put(
             texi_rect,
             Texicon::new(texicon.img.clone())
-                .texi_enabled(true)
-                .texi_is_selected(self.selected[idx])
-                .texi_img_size(vec2(80., 80.))
-                .texi_img_scale_hov(1.1)
-                .texi_text_size(13.)
-                .texi_sense(egui_widget_texicon::TexiSense::ImageAndText)
-                .texi_bkgnd_col(palette.red)
-                .texi_bkgnd_col_sel(palette.mauve)
-                .texi_bkgnd_col_hov(palette.mauve)
-                .texi_img_tint_col(palette.base)
-                .texi_img_tint_col_sel(palette.base)
-                .texi_img_tint_col_hov(palette.base)
-                .texi_text_col(palette.base)
-                .texi_text_col_sel(palette.base)
-                .texi_text_col_hov(palette.base)
-                .texi_frame_col(palette.base)
-                .texi_frame_col_sel(palette.base)
-                .texi_frame_col_hov(palette.teal)
-                .texi_frame_size(vec2(100., 150.))
-                .texi_frame_width(4.)
-                .texi_tooltip_text(Some(texicon.tooltip.to_string()))
-                .texi_tooltip_gap(40.)
-                .texi_tooltip_position(egui::RectAlign::BOTTOM),
+                .enabled(true)
+                .selected(self.selected[idx])
+                .img_size(vec2(80., 80.))
+                .img_scale_hov(1.1)
+                .text_size(13.)
+                .sense(egui_widget_texicon::TexiSense::ImageAndText)
+                .bkgnd_col(palette.red)
+                .bkgnd_col_sel(palette.mauve)
+                .bkgnd_col_hov(palette.mauve)
+                .img_tint_col(palette.base)
+                .img_tint_col_sel(palette.base)
+                .img_tint_col_hov(palette.base)
+                .text_col(palette.base)
+                .text_col_sel(palette.base)
+                .text_col_hov(palette.base)
+                .frame_col(palette.base)
+                .frame_col_sel(palette.teal)
+                .frame_col_hov(palette.teal)
+                .frame_size(vec2(100., 150.))
+                .frame_width(4.)
+                .tooltip_text(texicon.tooltip.to_string())
+                .tooltip_gap(40.)
+                .tooltip_position(egui::RectAlign::BOTTOM),
         );
         // Click response
         if resp.clicked() {
@@ -127,28 +144,26 @@ impl TexiState {
         let resp = ui.put(
             texi_rect,
             Texicon::new(texicon.img.clone())
-                .texi_enabled(true)
-                .texi_is_selected(self.selected[idx])
-                // .texi_img(texicon.img.clone())
-                .texi_img_size(vec2(48., 48.))
-                .texi_img_scale_hov(1.3)
-                .texi_text(None)
-                .texi_sense(egui_widget_texicon::TexiSense::Frame)
-                .texi_bkgnd_col(palette.red.gamma_multiply_u8(8))
-                .texi_bkgnd_col_sel(palette.red.gamma_multiply_u8(24))
-                .texi_bkgnd_col_hov(palette.red.gamma_multiply_u8(64))
-                .texi_img_tint_col(palette.text)
-                .texi_img_tint_col_sel(palette.text)
-                .texi_img_tint_col_hov(palette.text)
-                .texi_frame_col(palette.crust)
-                .texi_frame_col_sel(palette.text)
-                .texi_frame_col_hov(palette.text)
-                .texi_frame_size(texi_size)
-                .texi_frame_width(2.)
-                .texi_radius(0)
-                .texi_tooltip_text(Some(texicon.tooltip.to_string()))
-                .texi_tooltip_gap(20.)
-                .texi_tooltip_position(egui::RectAlign::BOTTOM),
+                .enabled(true)
+                .selected(self.selected[idx])
+                .img_size(vec2(48., 48.))
+                .img_scale_hov(1.3)
+                .sense(egui_widget_texicon::TexiSense::Frame)
+                .bkgnd_col(palette.red.gamma_multiply_u8(8))
+                .bkgnd_col_sel(palette.red.gamma_multiply_u8(24))
+                .bkgnd_col_hov(palette.red.gamma_multiply_u8(64))
+                .img_tint_col(palette.text)
+                .img_tint_col_sel(palette.text)
+                .img_tint_col_hov(palette.text)
+                .frame_col(palette.crust)
+                .frame_col_sel(palette.text)
+                .frame_col_hov(palette.text)
+                .frame_size(texi_size)
+                .frame_width(2.)
+                .radius(0)
+                .tooltip_text(texicon.tooltip.to_string())
+                .tooltip_gap(20.)
+                .tooltip_position(egui::RectAlign::BOTTOM),
         );
         // Click response
         if resp.clicked() {
@@ -166,32 +181,31 @@ impl TexiState {
         let resp = ui.put(
             texi_rect,
             Texicon::new(texicon.img.clone())
-                .texi_enabled(true)
-                .texi_is_selected(self.selected[idx])
-                // .texi_img(texicon.img.clone())
-                .texi_img_size(vec2(40., 40.))
-                .texi_img_scale_hov(1.15)
-                .texi_text(Some(texicon.text.to_string()))
-                .texi_text_size(15.)
-                .texi_img_text_gap(10.)
-                .texi_bkgnd_col(palette.base)
-                .texi_bkgnd_col_sel(palette.mantle)
-                .texi_bkgnd_col_hov(palette.crust)
-                .texi_img_tint_col(palette.blue)
-                .texi_img_tint_col_sel(palette.blue)
-                .texi_img_tint_col_hov(palette.blue)
-                .texi_text_col(palette.teal)
-                .texi_text_col_sel(palette.teal)
-                .texi_text_col_hov(palette.teal)
-                .texi_frame_col(palette.crust)
-                .texi_frame_col_sel(palette.subtext0)
-                .texi_frame_col_hov(palette.subtext0)
-                .texi_frame_size(texi_size)
-                .texi_frame_width(2.)
-                .texi_radius(20)
-                .texi_tooltip_text(Some(texicon.tooltip.to_string()))
-                .texi_tooltip_gap(20.)
-                .texi_tooltip_position(egui::RectAlign::BOTTOM),
+                .enabled(true)
+                .selected(self.selected[idx])
+                .img_size(vec2(40., 40.))
+                .img_scale_hov(1.15)
+                .text(texicon.text.to_string())
+                .text_size(15.)
+                .img_text_gap(10.)
+                .bkgnd_col(palette.base)
+                .bkgnd_col_sel(palette.mantle)
+                .bkgnd_col_hov(palette.crust)
+                .img_tint_col(palette.blue)
+                .img_tint_col_sel(palette.blue)
+                .img_tint_col_hov(palette.blue)
+                .text_col(palette.teal)
+                .text_col_sel(palette.teal)
+                .text_col_hov(palette.teal)
+                .frame_col(palette.crust)
+                .frame_col_sel(palette.subtext0)
+                .frame_col_hov(palette.subtext0)
+                .frame_size(texi_size)
+                .frame_width(2.)
+                .radius(20)
+                .tooltip_text(texicon.tooltip.to_string())
+                .tooltip_gap(20.)
+                .tooltip_position(egui::RectAlign::BOTTOM),
         );
         // Click response
         if resp.clicked() {
@@ -209,31 +223,30 @@ impl TexiState {
         let resp = ui.put(
             texi_rect,
             Texicon::new(texicon.img.clone())
-                .texi_enabled(true)
-                .texi_is_selected(self.selected[idx])
-                // .texi_img(texicon.img.clone())
-                .texi_img_size(vec2(50., 50.))
-                .texi_img_scale_hov(1.1)
-                .texi_text(Some(texicon.text.to_string()))
-                .texi_text_size(17.)
-                .texi_img_text_gap(6.)
-                .texi_bkgnd_col(palette.base)
-                .texi_bkgnd_col_sel(palette.mantle)
-                .texi_bkgnd_col_hov(palette.crust)
-                .texi_img_tint_col(palette.green)
-                .texi_img_tint_col_sel(palette.yellow)
-                .texi_img_tint_col_hov(palette.yellow)
-                .texi_text_col(palette.yellow)
-                .texi_text_col_sel(palette.green)
-                .texi_text_col_hov(palette.green)
-                .texi_frame_col(palette.crust)
-                .texi_frame_col_sel(palette.subtext0)
-                .texi_frame_col_hov(palette.subtext0)
-                .texi_frame_size(vec2(120., 100.))
-                .texi_frame_width(4.)
-                .texi_tooltip_text(Some(texicon.tooltip.to_string()))
-                .texi_tooltip_gap(20.)
-                .texi_tooltip_position(egui::RectAlign::BOTTOM),
+                .enabled(true)
+                .selected(self.selected[idx])
+                .img_size(vec2(50., 50.))
+                .img_scale_hov(1.1)
+                .text(texicon.text.to_string())
+                .text_size(17.)
+                .img_text_gap(6.)
+                .bkgnd_col(palette.base)
+                .bkgnd_col_sel(palette.mantle)
+                .bkgnd_col_hov(palette.crust)
+                .img_tint_col(palette.green)
+                .img_tint_col_sel(palette.yellow)
+                .img_tint_col_hov(palette.yellow)
+                .text_col(palette.yellow)
+                .text_col_sel(palette.green)
+                .text_col_hov(palette.green)
+                .frame_col(palette.crust)
+                .frame_col_sel(palette.subtext0)
+                .frame_col_hov(palette.subtext0)
+                .frame_size(vec2(120., 100.))
+                .frame_width(4.)
+                .tooltip_text(texicon.tooltip.to_string())
+                .tooltip_gap(20.)
+                .tooltip_position(egui::RectAlign::BOTTOM),
         );
         // Click response
         if resp.clicked() {
@@ -251,35 +264,48 @@ impl TexiState {
         let resp = ui.put(
             texi_rect,
             Texicon::new(texicon.img.clone())
-                .texi_enabled(false)
-                .texi_is_selected(self.selected[idx])
-                // .texi_img(texicon.img.clone())
-                .texi_img_size(vec2(50., 50.))
-                .texi_text(Some(texicon.text.to_string()))
-                .texi_text_size(17.)
-                .texi_img_text_gap(0.)
-                .texi_bkgnd_col(palette.base)
-                .texi_bkgnd_col_sel(palette.mantle)
-                .texi_bkgnd_col_hov(palette.crust)
-                .texi_img_tint_col(palette.green)
-                .texi_img_tint_col_sel(palette.yellow)
-                .texi_img_tint_col_hov(palette.yellow)
-                .texi_text_col(palette.yellow)
-                .texi_text_col_sel(palette.green)
-                .texi_text_col_hov(palette.green)
-                .texi_frame_col(palette.crust)
-                .texi_frame_col_sel(palette.crust)
-                .texi_frame_col_hov(palette.crust)
-                .texi_frame_size(texi_size)
-                .texi_frame_width(4.)
-                .texi_tooltip_text(Some(texicon.tooltip.to_string()))
-                .texi_tooltip_gap(20.)
-                .texi_tooltip_position(egui::RectAlign::BOTTOM),
+                .enabled(false)
+                .selected(self.selected[idx])
+                .img_size(vec2(50., 50.))
+                .text(texicon.text.to_string())
+                .text_size(17.)
+                .img_text_gap(0.)
+                .bkgnd_col(palette.base)
+                .bkgnd_col_sel(palette.mantle)
+                .bkgnd_col_hov(palette.crust)
+                .img_tint_col(palette.green)
+                .img_tint_col_sel(palette.yellow)
+                .img_tint_col_hov(palette.yellow)
+                .text_col(palette.yellow)
+                .text_col_sel(palette.green)
+                .text_col_hov(palette.green)
+                .frame_col(palette.crust)
+                .frame_col_sel(palette.crust)
+                .frame_col_hov(palette.crust)
+                .frame_size(texi_size)
+                .frame_width(4.)
+                .tooltip_text(texicon.tooltip.to_string())
+                .tooltip_gap(20.)
+                .tooltip_position(egui::RectAlign::BOTTOM),
         );
         // Click response
         if resp.clicked() {
             self.selected = [false; NUM_TEXICONS];
             self.selected[idx] = true;
         }
+        // ------------------------
+        // Timing the Texicons loop
+        // ------------------------
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let duration = start_time.elapsed();
+            self.benchmark.count += 1.0;
+            self.benchmark.sum += duration.as_micros() as f32;
+            self.benchmark.average = self.benchmark.sum / self.benchmark.count;
+        }
+    }
+
+    pub fn get_benchmark(&self) -> Benchmark {
+        self.benchmark.clone()
     }
 }

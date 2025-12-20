@@ -1,8 +1,12 @@
 # egui-widget-texicon-demo-app
-A cross-platform + wasm application to demonstrate [egui-widget-texicon](https://github.com/White-Rabbit-Scientific/egui-widget-texicon).
 
-To run in the browser: trunk serve --release
+**egui-widget-texicon-demo-app** is a cross-platform + wasm application to demonstrate [egui-widget-texicon](https://github.com/White-Rabbit-Scientific/egui-widget-texicon) and [egui-widget-themenator](https://github.com/White-Rabbit-Scientific/egui-widget-themenator).
 
-To install cargo watch: cargo install cargo-watch
+## Live wasm demo app
 
-Tested on Windows 11, MacOS Tahoe 26, and Ubuntu Linux.
+The wasm [demo app](https://dreamy-meringue-f98d25.netlify.app/) runs in your web browser.
+
+## Screenshots
+![Texicon screenshot 1](https://raw.githubusercontent.com/White-Rabbit-Scientific/egui-widget-texicon/main/images/Screenshot1.png)
+![Texicon screenshot 2](https://raw.githubusercontent.com/White-Rabbit-Scientific/egui-widget-texicon/main/images/Screenshot2.png)
+![Texicon screenshot 3](https://raw.githubusercontent.com/White-Rabbit-Scientific/egui-widget-texicon/main/images/Screenshot3.png)

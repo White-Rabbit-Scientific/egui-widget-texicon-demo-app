@@ -28,11 +28,10 @@ eframe = { version = "0.33", default-features = false, features = [
     "x11",           # To support older Linux distributions (restores one of the default features)
 ] }
 egui_extras = { version = "0.33", features = ["default", "all_loaders"] }
-log = "0.4"
-smallvec = "1.15"
-
 egui_widget_texicon = "0.2"     # version doesn't matter because patch overrides it
-egui_themes = "0.2"     # version doesn't matter because patch overrides it
+egui_widget_themenator = "0.2"  # version doesn't matter because patch overrides it
+os_info = { version = "3", default-features = false }
+log = "0.4"
 
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
@@ -54,7 +53,7 @@ opt-level = 2
 
 [patch.crates-io]
 egui_widget_texicon = { path = "../egui-widget-texicon" }
-egui_themes = { path = "../egui-themes" }
+egui_widget_themenator = { path = "../egui-widget-themenator" }
 
 
 # ----------------------------------------------------------------------------------------

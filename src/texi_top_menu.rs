@@ -1,6 +1,6 @@
 use egui::{include_image, vec2, ImageSource};
-use egui_themes::ThemeName;
 use egui_widget_texicon::Texicon;
+use egui_widget_themenator::ThemeName;
 
 // === Constants ===
 #[rustfmt::skip] const TEXI_WIDTH: f32             = 140.0;
@@ -50,9 +50,17 @@ const TEXICONS: [MyTexicon; 4] = [
 
 const NUM_TEXICONS: usize = TEXICONS.len();
 
+#[derive(Default, Clone)]
+pub struct Benchmark {
+    pub count: f32,
+    pub sum: f32,
+    pub average: f32,
+}
+
 #[derive(Clone, Default)]
 pub struct TexiState {
     selected: [bool; NUM_TEXICONS],
+    benchmark: Benchmark,
 }
 
 impl TexiState {
@@ -85,7 +93,15 @@ impl TexiState {
         // Pre-calculate colors to avoid duplication
         let green_dim = palette.green.gamma_multiply(0.5);
 
-        // Usage
+        // ------------------------
+        // Timing the Texicons loop
+        // ------------------------
+        #[cfg(not(target_arch = "wasm32"))]
+        let start_time = std::time::Instant::now();
+
+        // -----------------
+        // Draw the Texicons
+        // -----------------
         for (idx, texicon) in TEXICONS.iter().enumerate() {
             let pos = egui::pos2(x, y);
             let texi_rect = egui::Rect::from_min_size(pos, texi_size);
@@ -93,32 +109,31 @@ impl TexiState {
             let resp = ui.put(
                 texi_rect,
                 Texicon::new(texicon.img.clone())
-                    .texi_enabled(true)
-                    .texi_is_selected(self.selected[idx])
-                    // .texi_img(texicon.img.clone())
-                    .texi_img_size(IMG_SIZE)
-                    .texi_img_scale_hov(IMG_SCALE_HOVER)
-                    .texi_text(Some(texicon.text.to_string()))
-                    .texi_text_size(BASE_TEXT_SIZE + TEXT_SIZE_INCREMENT * idx as f32)
-                    .texi_img_text_gap(BASE_IMG_TEXT_GAP + IMG_TEXT_GAP_INCREMENT * idx as f32)
-                    .texi_bkgnd_col(palette.base)
-                    .texi_bkgnd_col_sel(palette.mantle)
-                    .texi_bkgnd_col_hov(palette.crust)
-                    .texi_img_tint_col(green_dim)
-                    .texi_img_tint_col_sel(palette.green)
-                    .texi_img_tint_col_hov(palette.green)
-                    .texi_text_col(green_dim)
-                    .texi_text_col_sel(palette.green)
-                    .texi_text_col_hov(palette.green)
-                    .texi_frame_col(palette.base)
-                    .texi_frame_col_sel(palette.base)
-                    .texi_frame_col_hov(palette.surface2)
-                    .texi_frame_size(texi_size)
-                    .texi_frame_width(FRAME_WIDTH)
-                    .texi_radius(CORNER_RADIUS)
-                    .texi_tooltip_text(Some(texicon.tooltip.to_string()))
-                    .texi_tooltip_gap(TOOLTIP_GAP)
-                    .texi_tooltip_position(egui::RectAlign::BOTTOM),
+                    .enabled(true)
+                    .selected(self.selected[idx])
+                    .img_size(IMG_SIZE)
+                    .img_scale_hov(IMG_SCALE_HOVER)
+                    .text(texicon.text.to_string())
+                    .text_size(BASE_TEXT_SIZE + TEXT_SIZE_INCREMENT * idx as f32)
+                    .img_text_gap(BASE_IMG_TEXT_GAP + IMG_TEXT_GAP_INCREMENT * idx as f32)
+                    .bkgnd_col(palette.base)
+                    .bkgnd_col_sel(palette.mantle)
+                    .bkgnd_col_hov(palette.crust)
+                    .img_tint_col(green_dim)
+                    .img_tint_col_sel(palette.green)
+                    .img_tint_col_hov(palette.green)
+                    .text_col(green_dim)
+                    .text_col_sel(palette.green)
+                    .text_col_hov(palette.green)
+                    .frame_col(palette.base)
+                    .frame_col_sel(palette.base)
+                    .frame_col_hov(palette.surface2)
+                    .frame_size(texi_size)
+                    .frame_width(FRAME_WIDTH)
+                    .radius(CORNER_RADIUS)
+                    .tooltip_text(texicon.tooltip.to_string())
+                    .tooltip_gap(TOOLTIP_GAP)
+                    .tooltip_position(egui::RectAlign::BOTTOM),
             );
             // Click response
             if resp.clicked() {
@@ -128,5 +143,20 @@ impl TexiState {
 
             x += TEXI_WIDTH + TEXI_GAP;
         }
+
+        // ------------------------
+        // Timing the Texicons loop
+        // ------------------------
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let duration = start_time.elapsed();
+            self.benchmark.count += 1.0;
+            self.benchmark.sum += duration.as_micros() as f32;
+            self.benchmark.average = self.benchmark.sum / self.benchmark.count;
+        }
+    }
+
+    pub fn get_benchmark(&self) -> Benchmark {
+        self.benchmark.clone()
     }
 }
