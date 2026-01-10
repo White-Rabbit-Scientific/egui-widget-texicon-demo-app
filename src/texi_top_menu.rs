@@ -1,6 +1,5 @@
 use egui::{include_image, vec2, ImageSource};
 use egui_widget_texicon::Texicon;
-use egui_widget_themenator::ThemeName;
 
 // === Constants ===
 #[rustfmt::skip] const TEXI_WIDTH: f32             = 140.0;
@@ -74,8 +73,8 @@ impl TexiState {
         }
     }
     pub fn draw_texicons(&mut self, ui: &mut egui::Ui) {
-        // Get current theme color palette
-        let palette = ThemeName::current(ui.ctx()).palette();
+        // Get the palette directly
+        let palette = egui_widget_themenator::ThemeVariant::get_current_palette(ui.ctx());
 
         // Allocate space for the texicons
         let (_id, rect) =

@@ -1,6 +1,4 @@
 use egui::FontId;
-use egui_widget_themenator::ThemeWidget;
-
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 #[cfg(debug_assertions)]
 const BUILD_MODE: &str = "debug";
@@ -48,8 +46,82 @@ impl eframe::App for TexiconDemoApp {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             let central_menu_benchmark = self.central_menu.get_benchmark();
-            // Theme selector
-            ui.add(ThemeWidget::new().label("Theme:").show_labels(false));
+            ui.horizontal(|ui| {
+                // Theme selector
+
+                // let theme_config = egui_widget_themenator::ThemeConfig {
+                //     variant: todo!(),
+                //     title: todo!(),
+                //     description: todo!(),
+                //     icon: todo!(),
+                // };
+
+                const LATTE: egui_widget_themenator::ThemeConfig =
+                    egui_widget_themenator::ThemeConfig {
+                        variant: egui_widget_themenator::ThemeVariant::Latte,
+                        title: "Latte:",
+                        description: "A light theme",
+                        icon: "\u{2600}",
+                    };
+
+                const FRAPPE: egui_widget_themenator::ThemeConfig =
+                    egui_widget_themenator::ThemeConfig {
+                        variant: egui_widget_themenator::ThemeVariant::Frappe,
+                        title: "Frappe:",
+                        description: "A dark theme",
+                        icon: "\u{1F319}",
+                    };
+
+                const MACCHIATO: egui_widget_themenator::ThemeConfig =
+                    egui_widget_themenator::ThemeConfig {
+                        variant: egui_widget_themenator::ThemeVariant::Macchiato,
+                        title: "Macchiato:",
+                        description: "A darker theme",
+                        icon: "\u{1F319}",
+                    };
+
+                const MOCHA: egui_widget_themenator::ThemeConfig =
+                    egui_widget_themenator::ThemeConfig {
+                        variant: egui_widget_themenator::ThemeVariant::Mocha,
+                        title: "Mocha:",
+                        description: "A darkerer theme",
+                        icon: "\u{1F319}",
+                    };
+
+                let themenator = egui_widget_themenator::Themenator::new() //.default_themes_two();
+                    .add(LATTE)
+                    .add(FRAPPE)
+                    .add(MACCHIATO)
+                    .add(MOCHA);
+
+                ui.add(themenator);
+
+                // let themenator = egui_widget_themenator::Themenator::new().default_themes_four();
+                // ui.add(themenator);
+
+                ui.add_space(30.);
+                ui.spacing_mut().item_spacing.x = 10.0;
+                ui.label("Github repositories: ");
+                ui.hyperlink_to(
+                    "This demo app",
+                    "https://github.com/White-Rabbit-Scientific/egui-widget-texicon-demo-app",
+                );
+                ui.label("  |  ");
+                ui.hyperlink_to(
+                    "Texicon widget",
+                    "https://github.com/White-Rabbit-Scientific/egui-widget-texicon",
+                );
+                ui.label("  |  ");
+                ui.hyperlink_to(
+                    "Themenator theme widget",
+                    "https://github.com/White-Rabbit-Scientific/egui-widget-themenator",
+                );
+                ui.label("  |  ");
+                ui.hyperlink_to(
+                    "egui demo app",
+                    "https://github.com/White-Rabbit-Scientific/egui-demo-app",
+                );
+            });
             ui.add_space(10.);
             print_text(ui);
             print_benchmarks(
@@ -166,16 +238,6 @@ fn print_benchmarks(
     ));
     ui.add_space(4.);
 }
-
-// Add OS info text to bottom of screen
-// https://github.com/emilk/egui/issues/7720
-// ui.with_layout(Layout::bottom_up(egui::Align::LEFT), |ui| {
-//     view_model.os_info = get_os_info();
-//     ui.label(RichText::new("Website Builder:").strong());
-//     ui.label(version);
-//     ui.label(RichText::new("System information:").strong());
-//     ui.label(&view_model.os_info);
-// });
 
 pub fn get_os_info() -> String {
     let info = os_info::get();
