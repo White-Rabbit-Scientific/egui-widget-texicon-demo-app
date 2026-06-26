@@ -1,8 +1,8 @@
 [package]
 name = "egui-widget-texicon-demo-app"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
-rust-version = "1.92"
+rust-version = "1.96"
 description = "An egui widget that combines an image and text (icon + label)"
 keywords = ["egui", "eframe", "widget", "ui", "gamedev"]
 categories = ["gui", "graphics", "rendering", "widget"]
@@ -18,8 +18,8 @@ all-features = true
 targets = ["x86_64-unknown-linux-gnu", "wasm32-unknown-unknown"]
 
 [dependencies]
-egui = "0.33"
-eframe = { version = "0.33", default-features = false, features = [
+egui = "0.35"
+eframe = { version = "0.35", default-features = false, features = [
     "accesskit",     # Make egui compatible with screen readers. NOTE: adds a lot of dependencies.
     "default_fonts", # Embed the default egui fonts.
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
@@ -27,8 +27,8 @@ eframe = { version = "0.33", default-features = false, features = [
     "wayland",       # To support Linux (and CI)
     "x11",           # To support older Linux distributions (restores one of the default features)
 ] }
-egui_extras = { version = "0.33", features = ["default", "all_loaders"] }
-egui_widget_texicon = "0.2"     # version doesn't matter because patch overrides it
+egui_extras = { version = "0.35", features = ["default", "all_loaders"] }
+egui_widget_texicon = "0.2.0"     # version doesn't matter because patch overrides it
 egui_widget_themenator = "0.2"  # version doesn't matter because patch overrides it
 os_info = { version = "3", default-features = false }
 log = "0.4"

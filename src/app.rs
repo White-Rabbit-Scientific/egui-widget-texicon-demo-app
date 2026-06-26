@@ -27,24 +27,24 @@ impl TexiconDemoApp {
 }
 
 impl eframe::App for TexiconDemoApp {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::TopBottomPanel::top("top_panel")
-            .exact_height(150.)
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        egui::Panel::top("top_panel")
+            .exact_size(150.)
             .resizable(false)
-            .show(ctx, |ui| {
+            .show(ui, |ui| {
                 self.top_menu.draw_texicons(ui);
             });
         let top_menu_benchmark = self.top_menu.get_benchmark();
 
-        egui::SidePanel::left("left_panel")
-            .exact_width(150.)
+        egui::Panel::left("left_panel")
+            .exact_size(150.)
             .resizable(false)
-            .show(ctx, |ui| {
+            .show(ui, |ui| {
                 self.side_menu.draw_texicons(ui);
             });
         let side_menu_benchmark = self.side_menu.get_benchmark();
 
-        egui::CentralPanel::default().show(ctx, |ui| {
+        egui::CentralPanel::default().show(ui, |ui| {
             let central_menu_benchmark = self.central_menu.get_benchmark();
             ui.horizontal(|ui| {
                 // Theme selector
